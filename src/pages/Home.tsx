@@ -72,6 +72,7 @@ export default function Home() {
   const [selectedDay, setSelectedDay] = useState<number>(1); // 週一為預設
   const [weeklySchedule, setWeeklySchedule] = useState<WeeklySchedule>({});
   const [editingBlock, setEditingBlock] = useState<string | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // 一週天數
   const weekDays = [
@@ -595,7 +596,9 @@ export default function Home() {
               <BookOpen className="h-8 w-8 text-indigo-600" />
               <span className="ml-2 text-xl font-bold text-gray-900">原子習慣</span>
             </div>
-            <div className="flex space-x-8 items-center">
+            
+            {/* 桌面端導航 */}
+            <div className="hidden lg:flex space-x-6 items-center">
               {[
                 { id: 'overview', name: '概覽', icon: BookOpen },
                 { id: 'identity', name: '身份模型', icon: Target },
@@ -619,11 +622,60 @@ export default function Home() {
                 </button>
               ))}
             </div>
+
+            {/* 手機端漢堡菜單按鈕 */}
+            <div className="lg:hidden flex items-center">
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="text-gray-600 hover:text-gray-900 p-2"
+              >
+                <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {mobileMenuOpen ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  )}
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
+
+        {/* 手機端下拉菜單 */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden bg-white border-t border-gray-200 shadow-lg">
+            <div className="px-4 py-2 space-y-1">
+              {[
+                { id: 'overview', name: '概覽', icon: BookOpen },
+                { id: 'identity', name: '身份模型', icon: Target },
+                { id: 'habit-loop', name: '習慣循環', icon: Zap },
+                { id: 'plateau', name: '潛在潛能', icon: TrendingUp },
+                { id: 'time-planner', name: '時間規劃', icon: Calendar },
+                { id: 'tracker', name: '習慣追蹤', icon: BarChart3 },
+                { id: 'planner', name: '習慣計劃', icon: Lightbulb }
+              ].map(({ id, name, icon: Icon }) => (
+                <button
+                  key={id}
+                  onClick={() => {
+                    setSelectedSection(id);
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`w-full flex items-center px-4 py-3 rounded-lg text-left transition-all duration-300 ${
+                    selectedSection === id 
+                      ? 'bg-indigo-100 text-indigo-700 shadow-md' 
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                  }`}
+                >
+                  <Icon className="h-5 w-5 mr-3" />
+                  <span className="font-medium">{name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </nav>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         {/* 概覽部分 */}
         {selectedSection === 'overview' && (
           <div className="space-y-12">
@@ -642,7 +694,7 @@ export default function Home() {
             </div>
 
             {/* 核心概念卡片 */}
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
               {[
                 {
                   icon: TrendingUp,
@@ -685,7 +737,7 @@ export default function Home() {
             {/* 實用技巧網格 */}
             <div>
               <h2 className="text-3xl font-bold text-center mb-8 animate-slide-up">核心技巧</h2>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                 {techniques.map((technique, index) => (
                   <Card key={index} className="hover:shadow-xl transition-all duration-300 cursor-pointer group transform hover:scale-105">
                     <CardContent className="p-6">
@@ -740,7 +792,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
               {identityLayers.map((layer, index) => (
                 <Card key={index} className={`${layer.color} border-none hover:shadow-lg transition-all duration-300 transform hover:scale-105`}>
                   <CardContent className="p-6">
@@ -819,7 +871,7 @@ export default function Home() {
             </Card>
 
             {/* 四法則總結 */}
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
               <div>
                 <h3 className="text-2xl font-bold mb-4 text-green-600">建立好習慣</h3>
                 <div className="space-y-4">
@@ -910,7 +962,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
               {[
                 {
                   icon: Clock,
@@ -953,8 +1005,8 @@ export default function Home() {
 
             {/* 類別篩選 - 移到頂部 */}
             <div className="text-center">
-              <h3 className="text-xl font-semibold mb-4">按類別瀏覽習慣模板</h3>
-              <div className="flex flex-wrap justify-center gap-3 mb-8">
+              <h3 className="text-lg md:text-xl font-semibold mb-4">按類別瀏覽習慣模板</h3>
+              <div className="flex flex-wrap justify-center gap-2 md:gap-3 mb-6 md:mb-8">
                 {allCategories.map((category) => (
                   <Badge 
                     key={category} 
@@ -973,27 +1025,30 @@ export default function Home() {
             </div>
 
             {/* 週間計劃表 */}
-            <Card className="p-6">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Calendar className="h-5 w-5 mr-2" />
-                  一週時間規劃
-                  <span className="ml-4 text-sm text-gray-500">（選擇天數，然後拖拽習慣到時間軸上）</span>
+            <Card className="p-4 md:p-6">
+              <CardHeader className="px-0">
+                <CardTitle className="flex flex-col sm:flex-row sm:items-center">
+                  <div className="flex items-center">
+                    <Calendar className="h-5 w-5 mr-2" />
+                    一週時間規劃
+                  </div>
+                  <span className="mt-2 sm:mt-0 sm:ml-4 text-xs sm:text-sm text-gray-500">（選擇天數，然後拖拽習慣到時間軸上）</span>
                 </CardTitle>
                 
                 {/* 天數選擇 */}
-                <div className="flex space-x-2 mt-4">
+                <div className="flex flex-wrap gap-2 mt-4">
                   {weekDays.map((day) => (
                     <button
                       key={day.id}
                       onClick={() => setSelectedDay(day.id)}
-                      className={`px-4 py-2 rounded-lg transition-all duration-300 ${
+                      className={`px-3 md:px-4 py-2 rounded-lg transition-all duration-300 text-sm md:text-base ${
                         selectedDay === day.id
                           ? 'bg-indigo-500 text-white shadow-md'
                           : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                       }`}
                     >
-                      {day.short}
+                      <span className="sm:hidden">{day.short}</span>
+                      <span className="hidden sm:inline">{day.name}</span>
                     </button>
                   ))}
                 </div>
@@ -1005,8 +1060,8 @@ export default function Home() {
                 </div>
                 
                 {/* 24小時時間條圖 */}
-                <div className="relative">
-                  <div className="flex border rounded-lg overflow-hidden" style={{ height: '240px' }}>
+                <div className="relative overflow-x-auto">
+                  <div className="flex border rounded-lg overflow-hidden min-w-full" style={{ height: '200px', minWidth: '800px' }}>
                     {Array.from({ length: 24 }, (_, hour) => (
                       <div
                         key={hour}
@@ -1203,7 +1258,7 @@ export default function Home() {
             </Card>
 
             {/* 習慣模板庫 */}
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
               {/* 左側：習慣模板 */}
               <div className="space-y-6">
                 <h3 className="text-2xl font-bold">習慣模板庫</h3>
@@ -1455,7 +1510,7 @@ export default function Home() {
             </div>
 
             {/* 統計卡片 */}
-            <div className="grid md:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8">
               {[
                 { label: '活躍習慣', value: habits.filter(h => h.isActive).length, icon: Target, color: 'text-blue-500' },
                 { label: '今日完成', value: habits.filter(h => isCompletedToday(h)).length, icon: CheckCircle2, color: 'text-green-500' },
@@ -1577,7 +1632,7 @@ export default function Home() {
             </Card>
 
             {/* 習慣計劃建議 */}
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
               <Card className="hover:shadow-xl transition-all duration-300">
                 <CardHeader>
                   <CardTitle className="text-green-600">🎯 習慣設計原則</CardTitle>
